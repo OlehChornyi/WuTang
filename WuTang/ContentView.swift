@@ -9,8 +9,10 @@ import SwiftUI
 
 struct ContentView: View {
     @State private var enteredName = ""
-    @State private var staticCoderNameIs = "Your Wu-Tang Coder Name Is:"
-    @State private var wuTangName = "Undefined Breakpoint"
+    @State private var staticCoderNameIs = ""
+    @State private var wuTangName = ""
+    @State private var imageName = "wu-tang"
+    @FocusState private var isFocused: Bool
     
     private let firstColumn = ["Algorithmic",
                                "Byte",
@@ -94,8 +96,22 @@ struct ContentView: View {
                         .stroke(.gray, lineWidth: 1)
                 }
                 .padding()
+                .focused($isFocused)
+                .onChange(of: isFocused) { oldValue, newValue in
+                    if isFocused == true {
+                        imageName = ""
+                        enteredName = ""
+                        staticCoderNameIs = ""
+                        wuTangName = ""
+                    }
+                }
             
-            Button(action: {}, label: {
+            Button(action: {
+                wuTangName = getWuTangName(name: enteredName)
+                isFocused = false
+                staticCoderNameIs = "Your Wu-Tang Coder Name Is:"
+                imageName = "wu-tang"
+            }, label: {
                 Image("wu-tang-button")
                 Text("Get It!")
             })
@@ -104,6 +120,7 @@ struct ContentView: View {
             .foregroundStyle(.yellow)
             .buttonStyle(.borderedProminent)
             .tint(.black)
+            .disabled(enteredName.isEmpty)
             
             
             VStack{
@@ -116,10 +133,22 @@ struct ContentView: View {
             
             Spacer()
             
-            Image("wu-tang")
+            Image(imageName)
                 .resizable()
                 .scaledToFit()
         }
+    }
+    
+    func getWuTangName(name: String) -> String {
+        var localName = name
+        let firstLetter = localName.removeFirst()
+        var firstColumnIndex = 0
+        for i in 0..<firstColumn.count{
+            if firstColumn[i].first == firstLetter {
+                firstColumnIndex = i == 0 ? 25 : i-1
+            }
+        }
+        return "\(firstColumn[firstColumnIndex]) \(secondColumn.randomElement()!)"
     }
 }
 
